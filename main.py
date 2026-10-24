@@ -79,6 +79,7 @@ def format_show_portfolio(rows):
     lines.append(f"{'-' * 88}")
     return '\n'.join(lines)
 
+name = input('Приветствуем в Сток Симулятор.\nВведите имя: ')
 while True:
     print('Выберите действие:\n'
           '1. Купить акции\n'

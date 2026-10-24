@@ -24,9 +24,11 @@ cursor.execute("""
     """)
 
 cursor.execute("""
-    CREATE TABLE IF NOT EXISTS player (
-        id INTEGER PRIMARY KEY CHECK (id = 1),
-        balance REAL NOT NULL
+    CREATE TABLE IF NOT EXISTS players (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        balance REAL NOT NULL,
+        is_bot INTEGER NOT NULL DEFAULT 0
     )
 """)
 

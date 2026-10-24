@@ -101,6 +101,8 @@ def show_portfolio():
     return db.cursor.fetchall()
 
 def sell_stock(ticker, order_size):
+    if order_size <= 0:
+        return False, 'Количество должно быть больше нуля!'
     db.cursor.execute("""
         SELECT quantity FROM stock_portfolio
         WHERE ticker = ?
