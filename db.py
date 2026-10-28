@@ -3,6 +3,8 @@ import sqlite3
 conn = sqlite3.connect('database.db')
 cursor = conn.cursor()
 
+cursor.execute("PRAGMA foreign_keys = ON")
+
 cursor.execute("""
     CREATE TABLE IF NOT EXISTS stocks (
         ticker TEXT PRIMARY KEY,
@@ -13,22 +15,46 @@ cursor.execute("""
 """)
 
 cursor.execute("""
-    CREATE TABLE IF NOT EXISTS stock_portfolio (
-        ticker TEXT PRIMARY KEY,
-        quantity INTEGER NOT NULL,
-        total_cost REAL NOT NULL,
-        avg_purc_price REAL NOT NULL,
-        current_price REAL,
-        percentage_change REAL
-    )
-    """)
-
-cursor.execute("""
     CREATE TABLE IF NOT EXISTS players (
         id INTEGER PRIMARY KEY,
         name TEXT NOT NULL,
         balance REAL NOT NULL,
         is_bot INTEGER NOT NULL DEFAULT 0
+    )
+""")
+
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS stock_portfolio (
+        player_id INTEGER NOT NULL,
+        ticker TEXT NOT NULL,
+        quantity INTEGER NOT NULL,
+        total_cost REAL NOT NULL,
+        avg_purc_price REAL NOT NULL,
+        current_price REAL,
+        percentage_change REAL,
+
+        PRIMARY KEY (player_id, ticker),
+
+        FOREIGN KEY (player_id) REFERENCES players(id),
+        FOREIGN KEY (ticker) REFERENCES stocks(ticker)
+    )
+    """)
+
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS transaction_history (
+        transaction_type TEXT NOT NULL,
+        ticker TEXT NOT NULL,
+        quantity INTEGER NOT NULL,
+        price REAL NOT NULL,
+        total_amount REAL NOT NULL,
+        date INTEGER NOT NULL
+    )
+""")
+
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS game_state (
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        current_day INTEGER NOT NULL DEFAULT 1
     )
 """)
 
@@ -46,7 +72,8 @@ cursor.executemany("""
 )
 
 cursor.execute("""
-    INSERT OR IGNORE INTO player (id, balance)
-    VALUES (?, ?)
-""", (1, 10_000.00))
+    INSERT OR IGNORE INTO game_state (id, current_day)
+    VALUES (1, 1)
+""")
+
 conn.commit()
